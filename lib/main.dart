@@ -23,16 +23,17 @@ class ExamplePage extends StatefulWidget {
 }
 
 class _ExamplePageState extends State<ExamplePage> {
- // final formKey = new GlobalKey<FormState>();
- // final key = new GlobalKey<ScaffoldState>();
-  final TextEditingController _filter = new TextEditingController();
-  final dio = new Dio();
+  // final formKey = new GlobalKey<FormState>();
+  // final key = new GlobalKey<ScaffoldState>();
+  final TextEditingController _filter = new TextEditingController(); //A controller for an editable text field.
+  final dio = new Dio(); //for http request
   String _searchText = "";
   List names = new List();
   List filteredNames = new List();
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text( 'Search Example' );
 
+  ///4. Attach a listener to our TextEditingController
   _ExamplePageState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
@@ -76,9 +77,13 @@ class _ExamplePageState extends State<ExamplePage> {
     );
   }
 
+  ///5. Build a table with the API information we’ve queried.
+  ///we stored these in two lists, one called names and the other filteredNames.
+  ///The reason we did this is that we want to constantly be filtering out names IF there is search text,
+  ///but we also want to keep the original list as is somewhere.
   Widget _buildList() {
     if (!(_searchText.isEmpty)) {
-      List tempList = new List();
+      List tempList = new List(); //call _getName list (build the list with the API
       for (int i = 0; i < filteredNames.length; i++) {
         if (filteredNames[i]['name'].toLowerCase().contains(_searchText.toLowerCase())) {
           tempList.add(filteredNames[i]);
@@ -97,6 +102,7 @@ class _ExamplePageState extends State<ExamplePage> {
     );
   }
 
+  ///3. Build our appBar with our with the search Icon present
   void _searchPressed() {
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
@@ -104,8 +110,8 @@ class _ExamplePageState extends State<ExamplePage> {
         this._appBarTitle = new TextField(
           controller: _filter,
           decoration: new InputDecoration(
-            prefixIcon: new Icon(Icons.search),
-            hintText: 'Search...'
+              prefixIcon: new Icon(Icons.search),
+              hintText: 'Search...'
           ),
         );
       } else {
@@ -117,6 +123,7 @@ class _ExamplePageState extends State<ExamplePage> {
     });
   }
 
+  ///2. Instantiate our lists when the page loads
   void _getNames() async {
     final response = await dio.get('https://swapi.co/api/people');
     List tempList = new List();
@@ -124,11 +131,9 @@ class _ExamplePageState extends State<ExamplePage> {
       tempList.add(response.data['results'][i]);
     }
     setState(() {
-      names = tempList;
+      names = tempList; //es igual a la lista de nombres de Star Wars
       names.shuffle();
       filteredNames = names;
     });
   }
-
-
 }
